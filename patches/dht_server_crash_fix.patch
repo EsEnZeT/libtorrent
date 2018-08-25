@@ -1,0 +1,22 @@
+diff -rc src/dht/dht_server.cc src_mod/dht/dht_server.cc
+*** src/dht/dht_server.cc	2018-08-25 15:02:21.000000000 +0200
+--- src_mod/dht/dht_server.cc	2018-08-25 15:15:26.000000000 +0200
+***************
+*** 896,902 ****
+  void
+  DhtServer::event_write() {
+    if (m_highQueue.empty() && m_lowQueue.empty())
+!     throw internal_error("DhtServer::event_write called but both write queues are empty.");
+  
+    if (!m_uploadThrottle->is_throttled(&m_uploadNode))
+      throw internal_error("DhtServer::event_write called while not in throttle list.");
+--- 896,904 ----
+  void
+  DhtServer::event_write() {
+    if (m_highQueue.empty() && m_lowQueue.empty())
+!     //throw internal_error("DhtServer::event_write called but both write queues are empty.");
+!     // DHT crash fix - https://github.com/rakshasa/libtorrent/issues/141
+!     lt_log_print(torrent::LOG_THREAD_NOTICE, "DhtServer::event_write called with both queues empty.", 0);  
+  
+    if (!m_uploadThrottle->is_throttled(&m_uploadNode))
+      throw internal_error("DhtServer::event_write called while not in throttle list.");
