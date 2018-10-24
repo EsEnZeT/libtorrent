@@ -1,0 +1,43 @@
+diff -rc src/download/download_wrapper.cc src_mod/download/download_wrapper.cc
+*** src/download/download_wrapper.cc	2018-08-25 15:02:21.000000000 +0200
+--- src_mod/download/download_wrapper.cc	2018-08-25 15:03:42.000000000 +0200
+***************
+*** 292,299 ****
+    if (!info()->is_open())
+      return;
+  
+!   // Every 2 minutes.
+!   if (ticks % 4 == 0) {
+      if (info()->is_active()) {
+        if (info()->is_pex_enabled()) {
+          m_main->do_peer_exchange();
+--- 292,299 ----
+    if (!info()->is_open())
+      return;
+  
+!   // Every 30 seconds.
+!   if (ticks % 1 == 0) {
+      if (info()->is_active()) {
+        if (info()->is_pex_enabled()) {
+          m_main->do_peer_exchange();
+diff -rc src/protocol/peer_connection_leech.cc src_mod/protocol/peer_connection_leech.cc
+*** src/protocol/peer_connection_leech.cc	2018-08-25 15:02:21.000000000 +0200
+--- src_mod/protocol/peer_connection_leech.cc	2018-08-25 15:03:42.000000000 +0200
+***************
+*** 117,123 ****
+  template<Download::ConnectionType type>
+  bool
+  PeerConnection<type>::receive_keepalive() {
+!   if (cachedTime - m_timeLastRead > rak::timer::from_seconds(240))
+      return false;
+  
+    // There's no point in adding ourselves to the write poll if the
+--- 117,124 ----
+  template<Download::ConnectionType type>
+  bool
+  PeerConnection<type>::receive_keepalive() {
+!   // Disconnect idle client quicker (after 50s)
+!   if (cachedTime - m_timeLastRead > rak::timer::from_seconds(50))
+      return false;
+  
+    // There's no point in adding ourselves to the write poll if the
